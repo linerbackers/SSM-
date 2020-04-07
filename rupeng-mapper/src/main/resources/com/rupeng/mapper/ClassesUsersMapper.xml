@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.rupeng.mapper.ClassesUsersMapper">
+
+	<!-- 对应Imaper接口的四个基本操作数据库语句 -->
+	<insert id="insert" parameterType="ClassesUser" >
+		insert into t_classesusers(classesId,userId) values(#{classesId},#{userId})
+	</insert>
+	
+	<update id="update" parameterType="ClassesUser">
+		update t_classesusers set classesId=#{classesId} ,userId=#{userId} where id=#{id}
+	</update>
+	
+	
+	<!-- 如果返回集合，resultType在这里会指的是集合元素的类型 -->
+	
+	<select id="select" parameterType="ClassesUser" resultType="ClassesUser">
+		select * from t_classesusers 
+		where classesId=#{classesId} and userId=#{userId}
+	</select>
+	
+	<select id="count" parameterType="ClassesUser" resultType="integer">
+		select count(*) from t_classesusers 
+		where classesId=#{classesId} and userId=#{userId}
+	</select>
+	
+	<!-- 对应IManyToManyMapper接口的四个基本操作数据库语句 -->
+	
+	<delete id="deleteByFirstId" parameterType="long">
+		delete from t_classesusers where classesId=#{classesId}
+	</delete>
+	
+	<delete id="deleteBySecondId" parameterType="long">
+		delete from t_classesusers where userId=#{userId}
+	</delete>	 
+	
+	<select id="selectFirstListBySecondId" parameterType="long" resultType="Classes">
+		select f.* from t_classesusers fs 
+		left join t_classes f
+		on f.id=fs.classesId
+		where f.isDeleted=false and fs.userId=#{userId}
+	</select>
+
+	<select id="selectSecondListByFirstId" parameterType="long" resultType="User">
+		select s.* from t_classesusers fs
+		left join t_users s
+		on s.id=fs.userId
+		where s.isDeleted=false and fs.classesId=#{classesId}
+	</select>
+</mapper>

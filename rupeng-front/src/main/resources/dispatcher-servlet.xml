@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd  
+                        http://www.springframework.org/schema/mvc 
+                        http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.springframework.org/schema/aop 
+                        http://www.springframework.org/schema/aop/spring-aop.xsd 
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+   		
+   		<context:component-scan base-package="com.rupeng.web"/>
+   		
+   		<!-- 注解方式开启处理器映射器和处理器适配器-->
+   		 <mvc:annotation-driven />
+   		 
+   		  <!-- 开启spring aop 注解支持 -->
+    <aop:aspectj-autoproxy />
+   <bean class="com.rupeng.web.aop.LogAspect"></bean>
+   
+   
+   <!-- 视图解析器 -->
+   		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        	<property name="prefix" value="/WEB-INF/jsp/"/>
+        	<property name="suffix" value=".jsp"/>
+        </bean>
+        
+        <mvc:interceptors>
+        	<mvc:interceptor>
+        		<mvc:mapping path="/"/>
+        		<mvc:mapping path="/card/*"/>
+        		<mvc:mapping path="/question/*"/>
+        		<mvc:mapping path="/segment/*"/>
+        		<mvc:mapping path="/user/*"/>
+        		<mvc:exclude-mapping path="/user/login.do"/>
+        		<mvc:exclude-mapping path="/index"/>
+        		<mvc:exclude-mapping path="/user/register.do"/>
+        		<bean class="com.rupeng.web.interceptor.AutoLoginInteceptor"/>
+        	</mvc:interceptor>
+        	
+        	<mvc:interceptor>
+        		<mvc:mapping path="/"/>
+        		<mvc:mapping path="/card/*"/>
+        		<mvc:mapping path="/question/*"/>
+        		<mvc:mapping path="/segment/*"/>
+        		<mvc:mapping path="/user/*"/>
+        		<mvc:exclude-mapping path="/user/login.do"/>
+        		<mvc:exclude-mapping path="/index"/>
+        		<mvc:exclude-mapping path="/user/register.do"/>
+        		<bean class="com.rupeng.web.interceptor.NoLoginInteceptor"></bean>
+        	</mvc:interceptor>
+        </mvc:interceptors>
+<!--       保证能够访问到资源,增加如下代码  方法一  
+<mvc:resources location="/front/css/" mapping="/css/**" />
+<mvc:resources location="/front/js/" mapping="/js/**" />
+<mvc:resources location="/front/images/" mapping="/images/**" />
+<mvc:resources location="/front/skin/" mapping="/skin/**" />
+<mvc:resources location="/front/lib/" mapping="/lib/**" />
+<mvc:resources location="/front/audios/" mapping="/audios/**" />
+<mvc:resources location="/front/videos/" mapping="/videos/**" /> -->
+
+
+
+<mvc:resources location="/css/" mapping="/css/**" />
+<mvc:resources location="/js/" mapping="/js/**" />
+<mvc:resources location="/images/" mapping="/images/**" />
+<mvc:resources location="/skin/" mapping="/skin/**" />
+<mvc:resources location="/lib/" mapping="/lib/**" />
+<mvc:resources location="/audios/" mapping="/audios/**" />
+<mvc:resources location="/videos/" mapping="/videos/**" />
+   </beans>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.rupeng.mapper.AdminUserRolesMapper">
+
+	<!-- 对应Imaper接口的基本操作数据库语句 -->
+	<insert id="insert" parameterType="AdminUserRole" >
+		insert into t_adminuserroles(adminUserId,roleId) values(#{adminUserId},#{roleId})
+	</insert>
+	
+	<update id="update" parameterType="AdminUserRole">
+	 update t_adminuserroles set
+            adminUserId=#{adminUserId},
+            roleId=#{roleId}
+        where id=#{id}		 
+	</update>
+	
+
+	<delete id="delete" parameterType="long">
+		 delete from t_adminuserroles where id=#{id}
+	</delete>
+	
+	<select id="select" parameterType="AdminUserRole" resultType="AdminUserRole">
+        select * from t_adminuserroles
+        <where>
+           <if test="id!=null"> and id=#{id} </if>
+           <if test="adminUserId!=null"> and adminUserId=#{adminUserId} </if>
+           <if test="roleId!=null"> and roleId=#{roleId} </if>
+        </where>
+    </select>
+	
+	
+	<!-- 对应IManyToManyMapper接口的四个基本操作数据库语句 -->
+	
+	<!-- 删除指定用户和所有角色的关系 -->
+	<delete id="deleteByFirstId" parameterType="long">
+		delete from t_adminuserroles where adminUserId=#{adminUserId}
+	</delete>
+	
+	<!-- 删除指定角色和所有用户的关系 -->
+	<delete id="deleteBySecondId" parameterType="long">
+		delete from t_adminuserroles where roleId=#{roleId}
+	</delete>	 
+	
+	<!-- 查询出指定角色拥有的所有用户 -->
+	<select id="selectFirstListBySecondId" parameterType="long" resultType="AdminUser">
+		select f.* from t_adminuserroles fs 
+		left join T_AdminUsers f
+		on f.id=fs.adminUserId
+		where f.isDeleted=false and fs.roleId=#{roleId}
+	</select>
+
+	<!--  查询出指定学习卡可用于的所有学科-->
+	<select id="selectSecondListByFirstId" parameterType="long" resultType="Role">
+		select s.* from t_adminuserroles fs
+		left join t_roles s
+		on s.id=fs.roleId
+		where s.isDeleted=false and fs.adminUserId=#{adminUserId}
+	</select>
+	
+	<select id="checkPermission" parameterType="map" resultType="integer" >
+		select count(*) from t_adminuserroles ur
+		LEFT JOIN t_roles r on r.id=ur.roleId
+		LEFT JOIN t_rolepermissions rp on r.id=rp.roleId
+		LEFT JOIN t_permissions p on p.id=rp.permissionId 
+		where r.isDeleted=FALSE and p.isDeleted=FALSE
+		 and ur.adminUserId=#{adminUserId} and p.path=#{path}
+	</select>
+</mapper>

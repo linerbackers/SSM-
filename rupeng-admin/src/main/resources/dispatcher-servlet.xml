@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd  
+                        http://www.springframework.org/schema/mvc 
+                        http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.springframework.org/schema/aop 
+                        http://www.springframework.org/schema/aop/spring-aop.xsd 
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+   		
+   		<context:component-scan base-package="com.rupeng.web"/>
+   		
+   		<!-- 注解方式开启 映射器处理器和适配器处理器-->
+   		 <mvc:annotation-driven />
+   		 
+   		  <!-- 开启spring aop 注解支持 -->
+    <aop:aspectj-autoproxy />
+   
+   <bean class="com.rupeng.web.aop.LogAspect"></bean>
+   <!-- 视图解析器 -->
+   		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        	<property name="prefix" value="/WEB-INF/jsp/"/>
+        	<property name="suffix" value=".jsp"/>
+        </bean>
+        
+        <!-- 拦截器配置 -->
+        <mvc:interceptors>
+            <mvc:interceptor>
+            <!-- 拦截请求的路径 -->
+            <mvc:mapping path="/"/>
+            <mvc:mapping path="/page/subject/*"/>
+            <mvc:mapping path="/page/card/*"/>
+            <mvc:mapping path="/page/user/*"/>
+            <mvc:mapping path="/page/classes/*"/>
+            <mvc:mapping path="/page/permission/*"/>
+            <mvc:mapping path="/page/role/*"/>
+            <mvc:mapping path="/page/adminUser/*"/>
+            <mvc:mapping path="/page/rolePermission/*"/>
+            <mvc:exclude-mapping path="/page/adminUser/login.do"/>
+            <!-- 实现拦截的bean -->
+           	<bean class="com.rupeng.web.interceptor.KeepOnlineInterceptor"></bean>
+            </mvc:interceptor>
+            
+              <mvc:interceptor>
+            <!-- 拦截请求的路径 -->
+            <mvc:mapping path="/"/>
+            <mvc:mapping path="/page/subject/*"/>
+            <mvc:mapping path="/page/card/*"/>
+            <mvc:mapping path="/page/user/*"/>
+            <mvc:mapping path="/page/classes/*"/>
+            <mvc:mapping path="/page/permission/*"/>
+            <mvc:mapping path="/page/role/*"/>
+            <mvc:mapping path="/page/adminUser/*"/>
+            <mvc:mapping path="/page/rolePermission/*"/>
+            <mvc:exclude-mapping path="/page/adminUser/login"/>
+            <mvc:exclude-mapping path="/page/adminUser/loginout"/>
+            <!-- 实现拦截的bean -->
+           	<bean class="com.rupeng.web.interceptor.PermissionInterceptor"></bean>
+            </mvc:interceptor>
+        </mvc:interceptors>
+        
+<!-- 资源映射 -->
+<mvc:resources location="/css/" mapping="/css/**" />
+<mvc:resources location="/js/" mapping="/js/**" />
+<mvc:resources location="/images/" mapping="/images/**" />
+<mvc:resources location="/skin/" mapping="/skin/**" />
+<mvc:resources location="/lib/" mapping="/lib/**" />
+        
+   </beans>

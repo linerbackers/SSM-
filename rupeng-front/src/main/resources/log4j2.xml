@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<Configuration status="OFF">
+    <Appenders>
+    <!-- 开发时，输出日志到控制台 -->
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{0} - %msg%n" />
+        </Console>
+        <!-- 项目部署上线后日志输出主要在这里面，可以自己指定输出位置 -->
+        <RollingFile name="ROLLING" fileName="D:/logs/rupeng-front/log.log"
+             filePattern="/logs/log_%d{yyyy-MM-dd}_%i.log">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="1024 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
+    </Appenders>
+    
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="ROLLING"/>
+        </Root>
+       
+       <!-- 控制某些包下的类的日志信息  目的在于：执行程序的过程中，mybatis.spring下会输出很多没有用的日志信息
+       因此我们把它的级别调高 --> 
+        <Logger name="org.mybatis.spring" level="error">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+    </Loggers>
+</Configuration>

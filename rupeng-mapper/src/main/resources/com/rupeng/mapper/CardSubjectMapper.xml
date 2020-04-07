@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.rupeng.mapper.CardSubjectMapper">
+
+	<!-- 对应Imaper接口的基本操作数据库语句 -->
+	<insert id="insert" parameterType="CardSubject" >
+		insert into t_cardsubjects(cardId,subjectId,seqNum) values(#{cardId},#{subjectId},#{seqNum})
+	</insert>
+	
+	<update id="update" parameterType="Subject">
+	 update T_CardSubjects set
+            cardId=#{cardId},
+            subjectId=#{subjectId},
+            seqNum=#{seqNum}
+        where id=#{id}		 
+	</update>
+	
+
+	<delete id="delete" parameterType="long">
+		 delete from T_CardSubjects where id=#{id}
+	</delete>
+	
+	<select id="select" parameterType="CardSubject" resultType="CardSubject">
+        select * from T_CardSubjects
+        <where>
+           <if test="id!=null"> and id=#{id} </if>
+           <if test="cardId!=null"> and cardId=#{cardId} </if>
+           <if test="subjectId!=null"> and subjectId=#{subjectId} </if>
+        </where>
+    </select>
+	
+	
+	<!-- 对应IManyToManyMapper接口的四个基本操作数据库语句 -->
+	
+	<!-- 删除指定学习卡和所有学科的关系 -->
+	<delete id="deleteByFirstId" parameterType="long">
+		delete from T_CardSubjects where cardId=#{cardId}
+	</delete>
+	
+	<!-- 删除指定学科和所有学习卡的关系 -->
+	<delete id="deleteBySecondId" parameterType="long">
+		delete from T_CardSubjects where subjectId=#{subjectId}
+	</delete>	 
+	
+	<!-- 查询出指定学科拥有的所有学习卡 -->
+	<select id="selectFirstListBySecondId" parameterType="long" resultType="Card">
+		select f.* from T_CardSubjects fs 
+		left join t_cards f 
+		on f.id=fs.cardId
+		where f.isDeleted=false and fs.subjectId=#{subjectId}
+	</select>
+
+	<!--  查询出指定学习卡可用于的所有学科-->
+	<select id="selectSecondListByFirstId" parameterType="long" resultType="Subject">
+		select s.* from T_CardSubjects fs
+		left join t_subjects s
+		on s.id=fs.subjectId
+		where s.isDeleted=false and fs.cardId=#{cardId}
+	</select>
+</mapper>

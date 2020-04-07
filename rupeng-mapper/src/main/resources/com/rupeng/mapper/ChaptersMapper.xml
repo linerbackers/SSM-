@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.rupeng.mapper.ChaptersMapper">
+
+	<!-- 对应Imaper接口的四个基本操作数据库语句 -->
+	<insert id="insert" parameterType="Chapter" >
+		insert into t_chapters(cardId,seqNum,name,description) 
+		values(#{cardId},#{seqNum},#{name},#{description})
+	</insert>
+	
+	<update id="update" parameterType="Chapter">
+		update t_chapters 
+		set cardId=#{cardId},seqNum=#{seqNum},name=#{name},description=#{description}
+		 where isDeleted=false and id=#{id}
+	</update>
+	
+	<!-- 软删除设计 -->
+	<delete id="delete" parameterType="long">
+		update t_chapters set isDeleted=true where id=#{id}
+	</delete>
+	
+	<!-- 如果返回集合，resultType在这里会指的是集合元素的类型 -->
+	<select id="select" parameterType="Chapter" resultType="Chapter">
+		select * from t_chapters 
+		where
+		isDeleted=false
+		<if test="id!=null">and id=#{id}</if>
+		<if test="cardId!=null">and cardId=#{cardId}</if>
+		<if test="seqNum!=null">and seqNum=#{seqNum}</if>
+		<if test="name!=null">and name=#{name}</if>
+		<if test="description!=null">and description=#{description}</if>
+	</select>
+	
+	
+</mapper>

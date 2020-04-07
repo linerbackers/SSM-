@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.rupeng.mapper.QuestionsMapper">
+	<!-- 对应Imaper接口的四个基本操作数据库语句 -->
+	<insert id="insert" parameterType="Question" >
+		insert into t_questions(userId,username,segmentId,courseInfo,createTime,resolvedTime,errorCode,errorInfo,description) 
+		values(#{userId},#{username},#{segmentId},#{courseInfo},#{createTime},#{resolvedTime},#{errorCode},#{errorInfo},#{description})
+	</insert>
+	
+	<update id="update" parameterType="Question">
+		update t_questions 
+		<set>
+			<if test="userId!=null">userId=#{userId}</if>
+			<if test="username!=null">username=#{username}</if>			
+			<if test="segmentId!=null">segmentId=#{segmentId}</if>	
+			<if test="createTime!=null">createTime=#{createTime}</if>	
+			<if test="resolvedTime!=null">resolvedTime=#{resolvedTime}</if>	
+			<if test="errorCode!=null">errorCode=#{errorCode}</if>	
+			<if test="errorInfo!=null">errorInfo=#{errorInfo}</if>	
+			<if test="description!=null">description=#{description}</if>	
+			<if test="isResolved!=null">isResolved=#{isResolved}</if>	
+		</set> 
+		where isDeleted=false and id=#{id}
+	</update>
+	
+	<!-- 软删除设计 -->
+	<delete id="delete" parameterType="long">
+		update t_questions set isDeleted=true where id=#{id}
+	</delete>
+	
+	<!-- 如果返回集合，resultType在这里会指的是集合元素的类型 -->
+	<select id="select" parameterType="Question" resultType="Question">
+		select * from t_questions 
+		where
+		isDeleted=false
+			<if test="id!=null">and id=#{id}</if>
+			<if test="userId!=null">and userId=#{userId}</if>
+			<if test="username!=null">and username=#{username}</if>			
+			<if test="segmentId!=null">and segmentId=#{segmentId}</if>	
+			<if test="createTime!=null">and createTime=#{createTime}</if>	
+			<if test="resolvedTime!=null">and resolvedTime=#{resolvedTime}</if>
+			<if test="errorCode!=null">and errorCode=#{errorCode}</if>	
+			<if test="errorInfo!=null">and errorInfo=#{errorInfo}</if>	
+			<if test="description!=null">and description=#{description}</if>	
+			<if test="isResolved!=null">and isResolved=#{isResolved}</if>	
+	</select>
+	
+	<select id="selectUnResolvedQuestionByTeacherId" parameterType="long" resultType="Question">
+		select * from t_questions where userId in(
+SELECT cu2.userId from t_classesusers cu2 where classesId in (
+select cu.classesId from t_classesusers cu where userId=#{userId})
+) and isResolved=FALSE
+	</select>
+	
+	<select id="selectUnResolvedQuestionByStudentId" parameterType="long" resultType="Question">
+	select q.* from t_questions q
+left JOIN t_questionanswers qa 
+on q.userId=qa.userId 
+where q.isDeleted=false
+and(qa.isDeleted is null or qa.isDeleted=false)
+and (q.userId=1 or qa.userId=1)
+and q.isResolved=FALSE
+	</select>
+</mapper>
